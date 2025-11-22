@@ -71,9 +71,9 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
 
   return (
     <div
-      className={`group flex flex-col gap-2 p-4 rounded-lg border transition-all ${getStatusColor()}`}
+      className={`group flex flex-col gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border transition-all ${getStatusColor()}`}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-2 sm:gap-3">
         <button
           onClick={() => {
             const statuses = ["pending", "in-progress", "completed"];
@@ -84,7 +84,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
           aria-label={`Change task status from "${
             task.status || "pending"
           }" - cycle through Pending, In Progress, Completed`}
-          className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+          className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all mt-1 ${
             task.status === "completed"
               ? "bg-[#368A04] border-[#368A04]"
               : task.status === "in-progress"
@@ -93,13 +93,13 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
           }`}
         >
           {task.status === "completed" && (
-            <Check className="w-4 h-4 text-white" />
+            <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
           )}
         </button>
 
         {isEditing ? (
           <div className="flex-1 flex flex-col gap-2">
-            <div className="flex gap-2">
+            <div className="flex gap-1 sm:gap-2">
               <input
                 type="text"
                 value={editTitle}
@@ -109,22 +109,22 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
                   if (e.key === "Escape") handleCancel();
                 }}
                 aria-label="Edit task title"
-                className="flex-1 px-3 py-1 rounded border-2 border-[#D0D0D0] bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[#D0D0D0]"
+                className="flex-1 px-2 sm:px-3 py-1 sm:py-2 rounded border-2 border-[oklch(0.4365_0.1509_256.72)] bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[oklch(0.4365_0.1509_256.72)] text-sm sm:text-base"
                 autoFocus
               />
               <button
                 onClick={handleSave}
                 aria-label="Save task changes"
-                className="text-green-500 hover:text-green-600 transition-colors"
+                className="p-1 sm:p-2 text-green-500 hover:text-green-600 transition-colors flex-shrink-0"
               >
-                <Check className="w-5 h-5" />
+                <Check className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={handleCancel}
                 aria-label="Cancel task edit"
-                className="text-destructive hover:text-destructive/80 transition-colors"
+                className="p-1 sm:p-2 text-destructive hover:text-destructive/80 transition-colors flex-shrink-0"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
             <textarea
@@ -132,13 +132,13 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
               onChange={(e) => setEditDescription(e.target.value)}
               placeholder="Task description (optional)..."
               aria-label="Edit task description"
-              className="flex-1 px-3 py-2 rounded border-2 border-[#D0D0D0] bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[#D0D0D0] resize-none h-20 text-sm"
+              className="flex-1 px-2 sm:px-3 py-1 sm:py-2 rounded border-2 border-[oklch(0.4365_0.1509_256.72)] bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[oklch(0.4365_0.1509_256.72)] resize-none h-16 sm:h-20 text-xs sm:text-sm"
             />
           </div>
         ) : (
           <>
             <span
-              className={`flex-1 text-lg ${
+              className={`flex-1 text-base sm:text-lg ${
                 task.status === "completed"
                   ? "line-through text-muted-foreground"
                   : "text-[oklch(0.4365_0.1509_256.72)]"
@@ -148,21 +148,21 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
               {task.title}
             </span>
 
-            <div className="flex gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex gap-1 sm:gap-2 opacity-100 transition-opacity flex-shrink-0">
               <button
                 onClick={() => {
                   setEditTitle(task.title);
                   setIsEditing(true);
                 }}
                 aria-label={`Edit "${task.title}"`}
-                className="p-1 text-muted-foreground hover:text-[oklch(0.4365_0.1509_256.72)] transition-colors"
+                className="p-1.5 sm:p-2 text-muted-foreground hover:text-[oklch(0.4365_0.1509_256.72)] focus:text-[oklch(0.4365_0.1509_256.72)] transition-colors"
               >
-                <Edit2 className="w-5 h-5" />
+                <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
               <button
                 onClick={() => onDelete(task.id)}
                 aria-label={`Delete "${task.title}"`}
-                className="p-1 text-muted-foreground hover:text-destructive transition-colors"
+                className="p-1.5 sm:p-2 text-muted-foreground hover:text-destructive focus:text-destructive transition-colors"
               >
                 <Trash2 className="w-5 h-5" />
               </button>
@@ -173,7 +173,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
       {task.description && !isEditing && (
         <button
           onClick={() => setShowDescription(!showDescription)}
-          className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-[oklch(0.4365_0.1509_256.72)] hover:bg-[oklch(0.4365_0.1509_256.72)]/10 transition-all ml-9 py-1 px-2 rounded cursor-pointer"
+          className="flex items-center gap-2 text-xs sm:text-sm font-medium transition-all sm:ml-9 py-1 px-2 rounded cursor-pointer"
           aria-label={showDescription ? "Hide description" : "Show description"}
         >
           {showDescription ? (
@@ -181,16 +181,16 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
           ) : (
             <ChevronDown className="w-4 h-4 text-[#034EA2]" />
           )}
-          Details
+          Description
         </button>
       )}
 
       {showDescription && task.description && !isEditing && (
-        <div className="ml-9 p-3 bg-background rounded text-sm text-foreground border border-border/50">
+        <div className="sm:ml-9 p-2 sm:p-3 bg-background rounded text-xs sm:text-sm text-foreground border border-border/50">
           {task.description}
         </div>
       )}
-      <div className="text-xs text-muted-foreground ml-9">
+      <div className="text-xs text-muted-foreground ml-9 sm:ml-9">
         Created: {formatTaskDate(task.createdAt)}
       </div>
     </div>

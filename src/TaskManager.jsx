@@ -133,8 +133,8 @@ export default function TaskManager() {
       data-testid="task-manager"
       className="min-h-screen bg-gradient-to-br from-background to-secondary"
     >
-      <div className="container max-w-2xl mx-auto px-4 py-8 border border-border rounded-lg bg-background shadow-lg">
-        <div className="mb-4">
+      <div className="container max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-8 border border-border rounded-lg bg-background shadow-lg">
+        <div className="mb-3 sm:mb-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[oklch(0.4365_0.1509_256.72)]" />
             <input
@@ -143,7 +143,7 @@ export default function TaskManager() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               aria-label="Search tasks by title"
-              className="w-full pl-10 pr-10 py-2 rounded-lg bg-card border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all text-sm"
+              className="w-full pl-10 pr-10 py-2 sm:py-2 rounded-lg bg-card border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all text-sm sm:text-base"
             />
             {searchQuery && (
               <button
@@ -157,8 +157,8 @@ export default function TaskManager() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 mb-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex-1">
+        <div className="flex flex-col gap-2 sm:gap-3 mb-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex-1 overflow-x-auto">
             <TaskFilters
               currentFilter={filter}
               onFilterChange={setFilter}
@@ -168,8 +168,12 @@ export default function TaskManager() {
               completedCount={completedCount}
             />
           </div>
-          <div className="flex items-center gap-2">
-            <label htmlFor="sort-by" className="text-xs text-muted-foreground">
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <label
+              htmlFor="sort-by"
+              className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap"
+            >
               Sort:
             </label>
             <select
@@ -177,21 +181,23 @@ export default function TaskManager() {
               aria-label="Sort tasks by name or creation time"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-2 py-1 rounded-lg bg-card border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all text-sm"
+              className="px-2 py-1 sm:px-3 sm:py-2 rounded-lg bg-card border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all text-xs sm:text-sm"
             >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="name-asc">Name (A-Z)</option>
-              <option value="name-desc">Name (Z-A)</option>
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="name-asc">A-Z</option>
+              <option value="name-desc">Z-A</option>
             </select>
           </div>
         </div>
-
+        <div className="mt-4 mb-6 sm:mt-6">
+          <TaskForm onAddTask={addTask} />
+        </div>
         <div>
           {filteredTasks.length === 0 ? (
-            <div className="text-center py-8 bg-card rounded-lg border border-border">
+            <div className="text-center py-6 sm:py-8 bg-card rounded-lg border border-border">
               <Circle className="w-10 h-10 text-muted-foreground mx-auto mb-2 opacity-50" />
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground text-xs sm:text-sm px-2">
                 {tasks.length === 0
                   ? "No tasks yet. Add one to get started!"
                   : debouncedSearchQuery
@@ -209,11 +215,11 @@ export default function TaskManager() {
                 onUpdateTask={updateTask}
                 onDeleteTask={deleteTask}
               />
-              <div className="flex flex-col gap-2 mt-3">
-                <div className="flex items-center justify-center gap-2">
+              <div className="flex flex-col gap-2 sm:gap-3 mt-2 sm:mt-3">
+                <div className="flex items-center justify-center gap-2 text-xs sm:text-sm">
                   <label
                     htmlFor="items-per-page"
-                    className="text-xs text-muted-foreground"
+                    className="text-muted-foreground whitespace-nowrap"
                   >
                     Tasks/Page:
                   </label>
@@ -229,7 +235,7 @@ export default function TaskManager() {
                       );
                       setCurrentPage(1);
                     }}
-                    className="px-2 py-1 rounded-lg bg-card border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all text-sm"
+                    className="px-2 py-1 rounded-lg bg-card border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all text-xs sm:text-sm"
                   >
                     <option value={5}>5</option>
                     <option value={10}>10</option>
@@ -237,22 +243,22 @@ export default function TaskManager() {
                     <option value="all">All</option>
                   </select>
                 </div>
-                <div className="flex items-center justify-between px-2 gap-2">
+                <div className="flex items-center justify-between px-1 gap-1 sm:gap-2 sm:px-2">
                   <button
                     onClick={() =>
                       setCurrentPage((prev) => Math.max(1, prev - 1))
                     }
                     disabled={currentPage === 1 || itemsPerPage === "all"}
                     aria-label="Go to previous page"
-                    className="flex items-center gap-1 px-3 py-1 rounded-lg bg-card border border-border text-foreground hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                    className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-card border border-border text-foreground hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs sm:text-sm whitespace-nowrap"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                    Prev
+                    <span className="hidden sm:inline">Prev</span>
                   </button>
                   <span className="text-xs text-muted-foreground whitespace-nowrap">
                     {itemsPerPage === "all"
-                      ? `All ${filteredTasks.length}`
-                      : `${currentPage} of ${totalPages}`}
+                      ? `${filteredTasks.length}`
+                      : `${currentPage}/${totalPages}`}
                   </span>
                   <button
                     onClick={() =>
@@ -262,18 +268,15 @@ export default function TaskManager() {
                       currentPage === totalPages || itemsPerPage === "all"
                     }
                     aria-label="Go to next page"
-                    className="flex items-center gap-1 px-3 py-1 rounded-lg bg-card border border-border text-foreground hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
+                    className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-card border border-border text-foreground hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs sm:text-sm whitespace-nowrap"
                   >
-                    Next
+                    <span className="hidden sm:inline">Next</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             </>
           )}
-        </div>
-        <div className="mt-6">
-          <TaskForm onAddTask={addTask} />
         </div>
       </div>
     </div>
