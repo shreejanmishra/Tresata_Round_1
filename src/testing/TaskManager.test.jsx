@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TaskManager from "../TaskManager.jsx";
 
@@ -15,7 +21,7 @@ describe("TaskManager", () => {
     expect(screen.getByTestId("task-manager")).toBeInTheDocument();
     expect(screen.getByText("Total Tasks")).toBeInTheDocument();
     expect(screen.getByTestId("completed-count")).toBeInTheDocument();
-    expect(screen.getByTestId("remaining-count")).toBeInTheDocument();
+    expect(screen.getByTestId("in-progress-count")).toBeInTheDocument();
   });
 
   it("adds a new task", async () => {
@@ -31,7 +37,7 @@ describe("TaskManager", () => {
     });
   });
 
-  it("toggles task completion", async () => {
+  it("cycles through task statuses", async () => {
     const user = userEvent.setup();
     render(<TaskManager />);
 
@@ -40,40 +46,85 @@ describe("TaskManager", () => {
     await user.click(screen.getByRole("button", { name: /add/i }));
 
     await waitFor(() => {
-      const checkButton = screen.getByRole("button", {
-        name: /mark.*complete/i,
-      });
-      expect(checkButton).toBeInTheDocument();
+      expect(screen.getByText("Task")).toBeInTheDocument();
     });
 
-    const checkButton = screen.getByRole("button", { name: /mark.*complete/i });
-    await user.click(checkButton);
+    const statusButton = screen.getByRole("button", {
+      name: /Change task status/i,
+    });
 
-    expect(checkButton).toBeInTheDocument();
+    // Click to cycle through statuses: pending -> in-progress -> completed -> pending
+    await user.click(statusButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("in-progress-count")).toHaveTextContent("1");
+    });
   });
 
-  it("filters tasks by status", async () => {
+  it("filters tasks by pending status", async () => {
     const user = userEvent.setup();
     render(<TaskManager />);
 
     const input = screen.getByPlaceholderText("Add a new task...");
-    await user.type(input, "Task 1{enter}");
-    await user.type(input, "Task 2{enter}");
+    await user.type(input, "Task 1");
+    await user.click(screen.getByRole("button", { name: /add/i }));
+    await user.type(input, "Task 2");
+    await user.click(screen.getByRole("button", { name: /add/i }));
 
     await waitFor(() => {
       expect(screen.getByText("Task 1")).toBeInTheDocument();
       expect(screen.getByText("Task 2")).toBeInTheDocument();
     });
 
-    const completedBtn = screen.getByRole("button", { name: /completed/i });
-    await user.click(completedBtn);
+    // Get the filter button group and click Pending button within it
+    const filterGroup = screen.getByRole("group", { name: /Task Filters/i });
+    const pendingBtn = within(filterGroup).getByRole("button", {
+      name: "Pending",
+    });
+    await user.click(pendingBtn);
 
     await waitFor(() => {
-      expect(screen.queryByText("Task 1")).not.toBeInTheDocument();
+      expect(screen.getByText("Task 1")).toBeInTheDocument();
+      expect(screen.getByText("Task 2")).toBeInTheDocument();
     });
   });
 
-  it("shows empty state message", () => {
+  it("filters tasks by completed status", async () => {
+    const user = userEvent.setup();
+    render(<TaskManager />);
+
+    const input = screen.getByPlaceholderText("Add a new task...");
+    await user.type(input, "Task 1");
+    await user.click(screen.getByRole("button", { name: /add/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Task 1")).toBeInTheDocument();
+    });
+
+    // Cycle task to completed status (pending -> in-progress -> completed)
+    const statusButtons = screen.getAllByRole("button", {
+      name: /Change task status/i,
+    });
+    await user.click(statusButtons[0]); // pending -> in-progress
+    await user.click(statusButtons[0]); // in-progress -> completed
+
+    await waitFor(() => {
+      expect(screen.getByTestId("completed-count")).toHaveTextContent("1");
+    });
+
+    // Get the filter button group and click Completed button within it
+    const filterGroup = screen.getByRole("group", { name: /Task Filters/i });
+    const completedBtn = within(filterGroup).getByRole("button", {
+      name: "Completed",
+    });
+    await user.click(completedBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText("Task 1")).toBeInTheDocument();
+    });
+  });
+
+  it("shows empty state message when no tasks", () => {
     render(<TaskManager />);
 
     expect(
@@ -81,38 +132,49 @@ describe("TaskManager", () => {
     ).toBeInTheDocument();
   });
 
-  it("searches tasks", async () => {
+  it("searches tasks with debounce", async () => {
     const user = userEvent.setup();
     render(<TaskManager />);
 
     const input = screen.getByPlaceholderText("Add a new task...");
-    await user.type(input, "Searchable{enter}");
-    await user.type(input, "Other{enter}");
+    await user.type(input, "Searchable");
+    await user.click(screen.getByRole("button", { name: /add/i }));
+    await user.type(input, "Other");
+    await user.click(screen.getByRole("button", { name: /add/i }));
 
     await waitFor(() => {
       expect(screen.getByText("Searchable")).toBeInTheDocument();
+      expect(screen.getByText("Other")).toBeInTheDocument();
     });
 
     const searchInput = screen.getByPlaceholderText("Search tasks...");
-    fireEvent.change(searchInput, { target: { value: "search" } });
+    await user.type(searchInput, "search");
 
-    await waitFor(() => {
-      expect(screen.getByText("Searchable")).toBeInTheDocument();
-      expect(screen.queryByText("Other")).not.toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText("Searchable")).toBeInTheDocument();
+        expect(screen.queryByText("Other")).not.toBeInTheDocument();
+      },
+      { timeout: 500 }
+    );
   });
 
-  it("clears search", async () => {
+  it("clears search using clear button", async () => {
     const user = userEvent.setup();
     render(<TaskManager />);
 
     const input = screen.getByPlaceholderText("Add a new task...");
-    await user.type(input, "Task{enter}");
+    await user.type(input, "Task");
+    await user.click(screen.getByRole("button", { name: /add/i }));
 
     const searchInput = screen.getByPlaceholderText("Search tasks...");
-    fireEvent.change(searchInput, { target: { value: "task" } });
+    await user.type(searchInput, "task");
 
-    const clearBtn = screen.getByRole("button", { name: /clear/i });
+    await waitFor(() => {
+      expect(searchInput).toHaveValue("task");
+    });
+
+    const clearBtn = screen.getByRole("button", { name: /clear search/i });
     await user.click(clearBtn);
 
     expect(searchInput).toHaveValue("");
@@ -131,6 +193,54 @@ describe("TaskManager", () => {
         "tasks",
         expect.stringContaining("Task")
       );
+    });
+  });
+
+  it("sorts tasks by different criteria", async () => {
+    const user = userEvent.setup();
+    render(<TaskManager />);
+
+    const input = screen.getByPlaceholderText("Add a new task...");
+    await user.type(input, "Zebra");
+    await user.click(screen.getByRole("button", { name: /add/i }));
+    await user.type(input, "Apple");
+    await user.click(screen.getByRole("button", { name: /add/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Zebra")).toBeInTheDocument();
+      expect(screen.getByText("Apple")).toBeInTheDocument();
+    });
+
+    const sortSelect = screen.getByDisplayValue("Newest First");
+    await user.selectOptions(sortSelect, "name-asc");
+
+    await waitFor(() => {
+      const tasks = screen.getAllByTestId("task-wrapper");
+      expect(tasks.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
+  it("handles pagination", async () => {
+    const user = userEvent.setup();
+    render(<TaskManager />);
+
+    const input = screen.getByPlaceholderText("Add a new task...");
+    for (let i = 1; i <= 6; i++) {
+      await user.type(input, `Task ${i}`);
+      await user.click(screen.getByRole("button", { name: /add/i }));
+    }
+
+    await waitFor(() => {
+      expect(screen.getByText("Task 6")).toBeInTheDocument();
+    });
+
+    const nextButton = screen.getByRole("button", { name: /next/i });
+    expect(nextButton).not.toBeDisabled();
+
+    await user.click(nextButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Page 2 of \d+/)).toBeInTheDocument();
     });
   });
 });

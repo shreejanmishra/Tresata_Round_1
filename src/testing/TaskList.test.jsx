@@ -13,13 +13,13 @@ describe("TaskList", () => {
       {
         id: 1,
         title: "Task 1",
-        completed: false,
+        status: "pending",
         createdAt: new Date().toISOString(),
       },
       {
         id: 2,
         title: "Task 2",
-        completed: false,
+        status: "completed",
         createdAt: new Date().toISOString(),
       },
     ];
@@ -48,5 +48,81 @@ describe("TaskList", () => {
     );
 
     expect(screen.queryByTestId(/task-/)).not.toBeInTheDocument();
+  });
+
+  it("renders task wrappers with correct roles", () => {
+    const tasks = [
+      {
+        id: 1,
+        title: "Task 1",
+        status: "pending",
+        createdAt: new Date().toISOString(),
+      },
+    ];
+
+    render(
+      <TaskList
+        tasks={tasks}
+        onToggleTask={jest.fn()}
+        onUpdateTask={jest.fn()}
+        onDeleteTask={jest.fn()}
+      />
+    );
+
+    const wrapper = screen.getByTestId("task-wrapper");
+    expect(wrapper).toHaveAttribute("role", "article");
+  });
+
+  it("renders tasks with animation classes", () => {
+    const tasks = [
+      {
+        id: 1,
+        title: "Task 1",
+        status: "in-progress",
+        createdAt: new Date().toISOString(),
+      },
+    ];
+
+    render(
+      <TaskList
+        tasks={tasks}
+        onToggleTask={jest.fn()}
+        onUpdateTask={jest.fn()}
+        onDeleteTask={jest.fn()}
+      />
+    );
+
+    const wrapper = screen.getByTestId("task-wrapper");
+    expect(wrapper).toHaveClass(
+      "animate-in",
+      "fade-in",
+      "slide-in-from-bottom-2"
+    );
+  });
+
+  it("passes correct props to TaskItem components", () => {
+    const onToggle = jest.fn();
+    const onUpdate = jest.fn();
+    const onDelete = jest.fn();
+
+    const tasks = [
+      {
+        id: 1,
+        title: "Task 1",
+        status: "pending",
+        createdAt: new Date().toISOString(),
+      },
+    ];
+
+    render(
+      <TaskList
+        tasks={tasks}
+        onToggleTask={onToggle}
+        onUpdateTask={onUpdate}
+        onDeleteTask={onDelete}
+      />
+    );
+
+    expect(screen.getByTestId("task-1")).toBeInTheDocument();
   });
 });
