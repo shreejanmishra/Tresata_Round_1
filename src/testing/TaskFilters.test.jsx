@@ -7,7 +7,7 @@ describe("TaskFilters", () => {
     const mockChange = jest.fn();
     render(<TaskFilters currentFilter="all" onFilterChange={mockChange} />);
 
-    expect(screen.getByText("All Tasks")).toBeInTheDocument();
+    expect(screen.getByText("All")).toBeInTheDocument();
     expect(screen.getByText("Pending")).toBeInTheDocument();
     expect(screen.getByText("In Progress")).toBeInTheDocument();
     expect(screen.getByText("Completed")).toBeInTheDocument();
@@ -33,12 +33,12 @@ describe("TaskFilters", () => {
     expect(pendingButton).toHaveClass("bg-card");
   });
 
-  it("calls onFilterChange with 'all' when All Tasks clicked", async () => {
+  it("calls onFilterChange with 'all' when All clicked", async () => {
     const mockChange = jest.fn();
     const user = userEvent.setup();
     render(<TaskFilters currentFilter="pending" onFilterChange={mockChange} />);
 
-    await user.click(screen.getByText("All Tasks"));
+    await user.click(screen.getByText("All"));
 
     expect(mockChange).toHaveBeenCalledWith("all");
   });
@@ -77,7 +77,7 @@ describe("TaskFilters", () => {
     const mockChange = jest.fn();
     render(<TaskFilters currentFilter="all" onFilterChange={mockChange} />);
 
-    const allButton = screen.getByText("All Tasks");
+    const allButton = screen.getByText("All");
     const pendingButton = screen.getByText("Pending");
     const completedButton = screen.getByText("Completed");
 
@@ -90,7 +90,9 @@ describe("TaskFilters", () => {
     const mockChange = jest.fn();
     render(<TaskFilters currentFilter="all" onFilterChange={mockChange} />);
 
-    const filterGroup = screen.getByRole("group", { name: /Task Filters/i });
+    const filterGroup = screen.getByRole("group", {
+      name: /Filter tasks by status/i,
+    });
     expect(filterGroup).toBeInTheDocument();
   });
 });

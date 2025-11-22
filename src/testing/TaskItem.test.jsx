@@ -6,6 +6,7 @@ describe("TaskItem", () => {
   const mockTask = {
     id: 1,
     title: "Test Task",
+    description: "Test Description",
     status: "pending",
     createdAt: new Date().toISOString(),
   };
@@ -151,7 +152,11 @@ describe("TaskItem", () => {
     const saveButton = screen.getByRole("button", { name: /Save/i });
     await user.click(saveButton);
 
-    expect(onUpdateMock).toHaveBeenCalledWith(1, "Updated Task");
+    expect(onUpdateMock).toHaveBeenCalledWith(
+      1,
+      "Updated Task",
+      "Test Description"
+    );
   });
 
   it("cancels edit mode with Escape key", async () => {

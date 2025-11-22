@@ -10,6 +10,8 @@ module.exports = {
   Plus: Icon,
   ChevronLeft: Icon,
   ChevronRight: Icon,
+  ChevronUp: Icon,
+  ChevronDown: Icon,
   Search: Icon,
   CheckCircle2: Icon,
   Circle: Icon,

@@ -77,7 +77,9 @@ describe("TaskManager", () => {
     });
 
     // Get the filter button group and click Pending button within it
-    const filterGroup = screen.getByRole("group", { name: /Task Filters/i });
+    const filterGroup = screen.getByRole("group", {
+      name: /Filter tasks by status/i,
+    });
     const pendingBtn = within(filterGroup).getByRole("button", {
       name: "Pending",
     });
@@ -113,7 +115,9 @@ describe("TaskManager", () => {
     });
 
     // Get the filter button group and click Completed button within it
-    const filterGroup = screen.getByRole("group", { name: /Task Filters/i });
+    const filterGroup = screen.getByRole("group", {
+      name: /Filter tasks by status/i,
+    });
     const completedBtn = within(filterGroup).getByRole("button", {
       name: "Completed",
     });
@@ -240,7 +244,7 @@ describe("TaskManager", () => {
     await user.click(nextButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Page 2 of \d+/)).toBeInTheDocument();
+      expect(screen.getByText(/2 of \d+/)).toBeInTheDocument();
     });
   });
 });
