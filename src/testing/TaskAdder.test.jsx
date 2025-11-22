@@ -47,19 +47,18 @@ describe("TaskAdder", () => {
     const user = userEvent.setup();
     render(<TaskAdder onAddTask={mockAdd} />);
 
-    const toggleDescBtn = screen.getByRole("button", {
-      name: /Show description/i,
-    });
-    await user.click(toggleDescBtn);
-
     const titleInput = screen.getByPlaceholderText("Add a new task...");
+
+    // Type title - this auto-shows the description field
+    await user.type(titleInput, "Test task");
+
+    // Description should now be visible
     const descInput = screen.getByPlaceholderText(
       "Add task description (optional)..."
     );
+    expect(descInput).toBeInTheDocument();
 
-    await user.type(titleInput, "Test task");
     await user.type(descInput, "Test description");
-
     await user.click(screen.getByRole("button", { name: /add/i }));
 
     expect(mockAdd).toHaveBeenCalledWith("Test task", "Test description");
@@ -70,30 +69,24 @@ describe("TaskAdder", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("shows and hides description field on toggle", async () => {
+  it("shows description field when title is entered", async () => {
     const mockAdd = jest.fn();
     const user = userEvent.setup();
     render(<TaskAdder onAddTask={mockAdd} />);
 
-    const toggleBtn = screen.getByRole("button", {
-      name: /Show description/i,
-    });
-
+    // Description should initially not be shown
     expect(
       screen.queryByPlaceholderText("Add task description (optional)...")
     ).not.toBeInTheDocument();
 
-    await user.click(toggleBtn);
+    // Type in title to trigger description field
+    const titleInput = screen.getByPlaceholderText("Add a new task...");
+    await user.type(titleInput, "Test");
 
+    // Description field should now be visible
     expect(
       screen.getByPlaceholderText("Add task description (optional)...")
     ).toBeInTheDocument();
-
-    await user.click(toggleBtn);
-
-    expect(
-      screen.queryByPlaceholderText("Add task description (optional)...")
-    ).not.toBeInTheDocument();
   });
 
   it("trims whitespace from task title and description", async () => {
@@ -101,17 +94,15 @@ describe("TaskAdder", () => {
     const user = userEvent.setup();
     render(<TaskAdder onAddTask={mockAdd} />);
 
-    const toggleDescBtn = screen.getByRole("button", {
-      name: /Show description/i,
-    });
-    await user.click(toggleDescBtn);
-
     const titleInput = screen.getByPlaceholderText("Add a new task...");
+
+    // Type title with whitespace - this auto-shows the description field
+    await user.type(titleInput, "  test  ");
+
     const descInput = screen.getByPlaceholderText(
       "Add task description (optional)..."
     );
 
-    await user.type(titleInput, "  test  ");
     await user.type(descInput, "  description  ");
 
     await user.click(screen.getByRole("button", { name: /add/i }));
@@ -146,17 +137,15 @@ describe("TaskAdder", () => {
     const user = userEvent.setup();
     render(<TaskAdder onAddTask={mockAdd} />);
 
-    const toggleDescBtn = screen.getByRole("button", {
-      name: /Show description/i,
-    });
-    await user.click(toggleDescBtn);
-
     const titleInput = screen.getByPlaceholderText("Add a new task...");
+
+    // Type title to auto-show description field
+    await user.type(titleInput, "New Task");
+
     const descInput = screen.getByPlaceholderText(
       "Add task description (optional)..."
     );
 
-    await user.type(titleInput, "New Task");
     await user.type(descInput, "New Description");
 
     await user.click(screen.getByRole("button", { name: /add/i }));
@@ -173,15 +162,19 @@ describe("TaskAdder", () => {
     const user = userEvent.setup();
     render(<TaskAdder onAddTask={mockAdd} />);
 
-    const toggleBtn = screen.getByRole("button", {
-      name: /Show description/i,
-    });
-    await user.click(toggleBtn);
-
     const titleInput = screen.getByPlaceholderText("Add a new task...");
+
+    // Type title to auto-show description field
     await user.type(titleInput, "Test task");
+
+    // Verify description field is now visible
+    expect(
+      screen.getByPlaceholderText("Add task description (optional)...")
+    ).toBeInTheDocument();
+
     await user.click(screen.getByRole("button", { name: /add/i }));
 
+    // After submission, description field should be hidden
     expect(
       screen.queryByPlaceholderText("Add task description (optional)...")
     ).not.toBeInTheDocument();
@@ -200,10 +193,10 @@ describe("TaskAdder", () => {
     const user = userEvent.setup();
     render(<TaskAdder onAddTask={mockAdd} />);
 
-    const toggleBtn = screen.getByRole("button", {
-      name: /Show description/i,
-    });
-    await user.click(toggleBtn);
+    const titleInput = screen.getByPlaceholderText("Add a new task...");
+
+    // Type title to auto-show description field
+    await user.type(titleInput, "Test");
 
     const descInput = screen.getByPlaceholderText(
       "Add task description (optional)..."

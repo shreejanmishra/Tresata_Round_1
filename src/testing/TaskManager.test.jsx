@@ -19,9 +19,9 @@ describe("TaskManager", () => {
     render(<TaskManager />);
 
     expect(screen.getByTestId("task-manager")).toBeInTheDocument();
-    expect(screen.getByText("Total Tasks")).toBeInTheDocument();
-    expect(screen.getByTestId("completed-count")).toBeInTheDocument();
-    expect(screen.getByTestId("in-progress-count")).toBeInTheDocument();
+    expect(
+      screen.getByText("No tasks yet. Add one to get started!")
+    ).toBeInTheDocument();
   });
 
   it("adds a new task", async () => {
@@ -53,11 +53,15 @@ describe("TaskManager", () => {
       name: /Change task status/i,
     });
 
-    // Click to cycle through statuses: pending -> in-progress -> completed -> pending
+    // Click to cycle through statuses: pending -> in-progress
     await user.click(statusButton);
 
+    // Verify status button shows the new status in aria-label
     await waitFor(() => {
-      expect(screen.getByTestId("in-progress-count")).toHaveTextContent("1");
+      expect(statusButton).toHaveAttribute(
+        "aria-label",
+        expect.stringContaining("in-progress")
+      );
     });
   });
 
@@ -81,7 +85,7 @@ describe("TaskManager", () => {
       name: /Filter tasks by status/i,
     });
     const pendingBtn = within(filterGroup).getByRole("button", {
-      name: "Pending",
+      name: /Pending/,
     });
     await user.click(pendingBtn);
 
@@ -108,10 +112,21 @@ describe("TaskManager", () => {
       name: /Change task status/i,
     });
     await user.click(statusButtons[0]); // pending -> in-progress
+
+    await waitFor(() => {
+      expect(statusButtons[0]).toHaveAttribute(
+        "aria-label",
+        expect.stringContaining("in-progress")
+      );
+    });
+
     await user.click(statusButtons[0]); // in-progress -> completed
 
     await waitFor(() => {
-      expect(screen.getByTestId("completed-count")).toHaveTextContent("1");
+      expect(statusButtons[0]).toHaveAttribute(
+        "aria-label",
+        expect.stringContaining("completed")
+      );
     });
 
     // Get the filter button group and click Completed button within it
@@ -119,7 +134,7 @@ describe("TaskManager", () => {
       name: /Filter tasks by status/i,
     });
     const completedBtn = within(filterGroup).getByRole("button", {
-      name: "Completed",
+      name: /Completed/,
     });
     await user.click(completedBtn);
 
@@ -215,7 +230,11 @@ describe("TaskManager", () => {
       expect(screen.getByText("Apple")).toBeInTheDocument();
     });
 
-    const sortSelect = screen.getByDisplayValue("Newest First");
+    const sortSelect = screen.getByRole("combobox", {
+      name: /Sort tasks by/i,
+    });
+    expect(sortSelect).toHaveValue("newest");
+
     await user.selectOptions(sortSelect, "name-asc");
 
     await waitFor(() => {
@@ -244,7 +263,9 @@ describe("TaskManager", () => {
     await user.click(nextButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/2 of \d+/)).toBeInTheDocument();
+      // Pagination shows as "2/2" format
+      const paginationText = screen.getByText(/^\d+\/\d+$/);
+      expect(paginationText).toHaveTextContent(/2\/\d/);
     });
   });
 });
