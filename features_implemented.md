@@ -1,5 +1,6 @@
 Build tool: Vite
 
+npm i- install all the dependencies mentioned in package.json
 npm run dev - start dev server
 npm run build - build production ready dist folder (used in VM deployment)
 npm run test - run Jest test suite
