@@ -11,7 +11,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
       onUpdate(task.id, trimmed);
     }
     setIsEditing(false);
-    setEditValue(task.title); // always reset to original
+    setEditValue(task.title);
   };
 
   const handleCancel = () => {
@@ -115,7 +115,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
               {task.title}
             </span>
 
-            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => {
                   setEditValue(task.title);
