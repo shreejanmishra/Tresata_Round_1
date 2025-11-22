@@ -27,7 +27,7 @@ export default function TaskFilters({
 
   return (
     <div
-      className="flex gap-2 flex-wrap"
+      className="flex gap-1 sm:gap-2 flex-wrap"
       role="group"
       aria-label="Filter tasks by status"
     >
@@ -36,7 +36,7 @@ export default function TaskFilters({
           key={f.value}
           onClick={() => onFilterChange(f.value)}
           aria-current={currentFilter === f.value ? "true" : "false"}
-          className={`px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap text-sm ${
+          className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-medium transition-all whitespace-nowrap text-xs sm:text-sm ${
             currentFilter === f.value
               ? "bg-primary text-primary-foreground"
               : "bg-card border border-border text-foreground hover:border-primary"
