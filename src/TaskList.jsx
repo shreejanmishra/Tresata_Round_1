@@ -5,6 +5,8 @@ export default function TaskList({
   onToggleTask,
   onUpdateTask,
   onDeleteTask,
+  selectedTasks,
+  onToggleTaskSelection,
 }) {
   return (
     <div className="space-y-2">
@@ -20,6 +22,8 @@ export default function TaskList({
             onToggle={onToggleTask}
             onUpdate={onUpdateTask}
             onDelete={onDeleteTask}
+            isSelected={selectedTasks?.has(task.id) || false}
+            onToggleSelection={onToggleTaskSelection}
           />
         </div>
       ))}

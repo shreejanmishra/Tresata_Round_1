@@ -5,12 +5,12 @@ import TaskForm from "./TaskAdder";
 import TaskList from "./TaskList";
 import TaskFilters from "./TaskFilters";
 import {
-  CheckCircle2,
   Circle,
   ChevronLeft,
   ChevronRight,
   Search,
   X,
+  Trash2,
 } from "lucide-react";
 
 export default function TaskManager() {
@@ -21,6 +21,8 @@ export default function TaskManager() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [sortBy, setSortBy] = useState("newest");
+  const [selectedTasks, setSelectedTasks] = useState(new Set());
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     const savedTasks = localStorage.getItem("tasks");
@@ -72,6 +74,42 @@ export default function TaskManager() {
 
   const deleteTask = (id) => {
     setTasks(tasks.filter((task) => task.id !== id));
+  };
+
+  const deleteSelectedTasks = () => {
+    setTasks(tasks.filter((task) => !selectedTasks.has(task.id)));
+    setSelectedTasks(new Set());
+    setShowDeleteConfirm(false);
+  };
+
+  const updateSelectedTasksStatus = (newStatus) => {
+    setTasks(
+      tasks.map((task) =>
+        selectedTasks.has(task.id) ? { ...task, status: newStatus } : task
+      )
+    );
+    setSelectedTasks(new Set());
+  };
+
+  const toggleTaskSelection = (id) => {
+    const newSelected = new Set(selectedTasks);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedTasks(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (
+      selectedTasks.size === paginatedTasks.length &&
+      paginatedTasks.length > 0
+    ) {
+      setSelectedTasks(new Set());
+    } else {
+      setSelectedTasks(new Set(paginatedTasks.map((task) => task.id)));
+    }
   };
 
   const getFilteredTasks = () => {
@@ -209,11 +247,81 @@ export default function TaskManager() {
             </div>
           ) : (
             <>
+              {paginatedTasks.length > 0 && (
+                <div className="flex flex-col gap-2 sm:gap-3 mb-3 p-2 sm:p-3 bg-card rounded-lg border border-border">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedTasks.size === paginatedTasks.length &&
+                        paginatedTasks.length > 0
+                      }
+                      onChange={toggleSelectAll}
+                      aria-label="Select all visible tasks"
+                      className="w-5 h-5 rounded border-2 border-border cursor-pointer"
+                    />
+                    <span className="text-xs sm:text-sm text-muted-foreground flex-1">
+                      {selectedTasks.size > 0
+                        ? `${selectedTasks.size} task${
+                            selectedTasks.size > 1 ? "s" : ""
+                          } selected`
+                        : "Select tasks"}
+                    </span>
+                  </div>
+
+                  {selectedTasks.size > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => updateSelectedTasksStatus("pending")}
+                        className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-gray-500/20 text-gray-600 hover:bg-gray-500/30 transition-colors text-xs sm:text-sm whitespace-nowrap"
+                        aria-label={`Mark ${selectedTasks.size} task${
+                          selectedTasks.size > 1 ? "s" : ""
+                        } as pending`}
+                      >
+                        <Circle className="w-4 h-4" />
+                        Pending
+                      </button>
+                      <button
+                        onClick={() => updateSelectedTasksStatus("in-progress")}
+                        className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-yellow-500/20 text-yellow-600 hover:bg-yellow-500/30 transition-colors text-xs sm:text-sm whitespace-nowrap"
+                        aria-label={`Mark ${selectedTasks.size} task${
+                          selectedTasks.size > 1 ? "s" : ""
+                        } as in progress`}
+                      >
+                        <Circle className="w-4 h-4" />
+                        In Progress
+                      </button>
+                      <button
+                        onClick={() => updateSelectedTasksStatus("completed")}
+                        className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-green-500/20 text-green-600 hover:bg-green-500/30 transition-colors text-xs sm:text-sm whitespace-nowrap"
+                        aria-label={`Mark ${selectedTasks.size} task${
+                          selectedTasks.size > 1 ? "s" : ""
+                        } as completed`}
+                      >
+                        <Circle className="w-4 h-4" />
+                        Completed
+                      </button>
+                      <button
+                        onClick={() => setShowDeleteConfirm(true)}
+                        className="flex items-center gap-1 px-2 sm:px-3 py-1 sm:py-2 rounded-lg bg-destructive text-white hover:bg-destructive/90 transition-colors text-xs sm:text-sm whitespace-nowrap"
+                        aria-label={`Delete ${
+                          selectedTasks.size
+                        } selected task${selectedTasks.size > 1 ? "s" : ""}`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
               <TaskList
                 tasks={paginatedTasks}
                 onToggleTask={toggleTask}
                 onUpdateTask={updateTask}
                 onDeleteTask={deleteTask}
+                selectedTasks={selectedTasks}
+                onToggleTaskSelection={toggleTaskSelection}
               />
               <div className="flex flex-col gap-2 sm:gap-3 mt-2 sm:mt-3">
                 <div className="flex items-center justify-center gap-2 text-xs sm:text-sm">
@@ -278,6 +386,34 @@ export default function TaskManager() {
             </>
           )}
         </div>
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-background border border-border rounded-lg p-4 sm:p-6 max-w-sm w-full shadow-lg">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">
+                Confirm Delete
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground mb-6">
+                Are you sure you want to delete {selectedTasks.size} task
+                {selectedTasks.size > 1 ? "s" : ""}? This action cannot be
+                undone.
+              </p>
+              <div className="flex gap-2 justify-end">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-3 sm:px-4 py-2 rounded-lg bg-card border border-border text-foreground hover:bg-secondary transition-colors text-xs sm:text-sm font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={deleteSelectedTasks}
+                  className="px-3 sm:px-4 py-2 rounded-lg bg-destructive text-white hover:bg-destructive/90 transition-colors text-xs sm:text-sm font-medium"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
