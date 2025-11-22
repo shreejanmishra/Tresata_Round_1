@@ -1,22 +1,30 @@
 import { useState } from "react";
-import { Check, X, Trash2, Edit2 } from "lucide-react";
+import { Check, X, Trash2, Edit2, ChevronUp, ChevronDown } from "lucide-react";
 
 export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(task.title);
+  const [editTitle, setEditTitle] = useState(task.title);
+  const [editDescription, setEditDescription] = useState(
+    task.description || ""
+  );
+  const [showDescription, setShowDescription] = useState(false);
 
   const handleSave = () => {
-    const trimmed = editValue.trim();
-    if (trimmed && trimmed !== task.title) {
-      onUpdate(task.id, trimmed);
+    if (
+      editTitle.trim() &&
+      (editTitle !== task.title || editDescription !== task.description)
+    ) {
+      onUpdate(task.id, editTitle.trim(), editDescription.trim());
     }
     setIsEditing(false);
-    setEditValue(task.title);
+    setEditTitle(task.title);
+    setEditDescription(task.description || "");
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setEditValue(task.title);
+    setEditTitle(task.title);
+    setEditDescription(task.description || "");
   };
 
   const formatTaskDate = (dateString) => {
@@ -90,33 +98,42 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
         </button>
 
         {isEditing ? (
-          <div className="flex-1 flex items-center gap-2">
-            <input
-              type="text"
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSave();
-                if (e.key === "Escape") handleCancel();
-              }}
-              aria-label="Edit task title"
-              className="flex-1 px-3 py-1 rounded border border-primary bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              autoFocus
+          <div className="flex-1 flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSave();
+                  if (e.key === "Escape") handleCancel();
+                }}
+                aria-label="Edit task title"
+                className="flex-1 px-3 py-1 rounded border border-primary bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                autoFocus
+              />
+              <button
+                onClick={handleSave}
+                aria-label="Save task changes"
+                className="text-green-500 hover:text-green-600 transition-colors"
+              >
+                <Check className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleCancel}
+                aria-label="Cancel task edit"
+                className="text-destructive hover:text-destructive/80 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <textarea
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
+              placeholder="Task description (optional)..."
+              aria-label="Edit task description"
+              className="flex-1 px-3 py-2 rounded border border-primary bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none h-20 text-sm"
             />
-            <button
-              onClick={handleSave}
-              aria-label="Save task changes"
-              className="text-green-500 hover:text-green-600 transition-colors"
-            >
-              <Check className="w-5 h-5" />
-            </button>
-            <button
-              onClick={handleCancel}
-              aria-label="Cancel task edit"
-              className="text-destructive hover:text-destructive/80 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
           </div>
         ) : (
           <>
@@ -134,7 +151,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
             <div className="flex gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => {
-                  setEditValue(task.title);
+                  setEditTitle(task.title);
                   setIsEditing(true);
                 }}
                 aria-label={`Edit "${task.title}"`}
@@ -153,7 +170,26 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
           </>
         )}
       </div>
+      {task.description && !isEditing && (
+        <button
+          onClick={() => setShowDescription(!showDescription)}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors ml-9 py-1"
+          aria-label={showDescription ? "Hide description" : "Show description"}
+        >
+          {showDescription ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
+          Description
+        </button>
+      )}
 
+      {showDescription && task.description && !isEditing && (
+        <div className="ml-9 p-3 bg-background rounded text-sm text-foreground border border-border/50">
+          {task.description}
+        </div>
+      )}
       <div className="text-xs text-muted-foreground ml-9">
         Created: {formatTaskDate(task.createdAt)}
       </div>

@@ -41,18 +41,25 @@ export default function TaskManager() {
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
 
-  const addTask = (taskTitle) => {
+  const addTask = (taskTitle, taskDescription) => {
     const newTask = {
       id: Date.now(),
       title: taskTitle,
+      description: taskDescription || "",
       status: "pending",
       createdAt: new Date().toISOString(),
     };
     setTasks([newTask, ...tasks]);
   };
 
-  const updateTask = (id, title) => {
-    setTasks(tasks.map((task) => (task.id === id ? { ...task, title } : task)));
+  const updateTask = (id, title, description) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id
+          ? { ...task, title, description: description || "" }
+          : task
+      )
+    );
   };
 
   const toggleTask = (id, newStatus) => {
