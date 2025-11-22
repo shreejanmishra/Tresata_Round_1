@@ -1,7 +1,8 @@
 export default function TaskFilters({ currentFilter, onFilterChange }) {
   const filters = [
     { value: "all", label: "All Tasks" },
-    { value: "incomplete", label: "Incomplete" },
+    { value: "pending", label: "Pending" },
+    { value: "in-progress", label: "In Progress" },
     { value: "completed", label: "Completed" },
   ];
 

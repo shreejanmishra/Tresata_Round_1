@@ -45,7 +45,7 @@ export default function TaskManager() {
     const newTask = {
       id: Date.now(),
       title: taskTitle,
-      completed: false,
+      status: "pending",
       createdAt: new Date().toISOString(),
     };
     setTasks([newTask, ...tasks]);
@@ -55,10 +55,10 @@ export default function TaskManager() {
     setTasks(tasks.map((task) => (task.id === id ? { ...task, title } : task)));
   };
 
-  const toggleTask = (id) => {
+  const toggleTask = (id, newStatus) => {
     setTasks(
       tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+        task.id === id ? { ...task, status: newStatus } : task
       )
     );
   };
@@ -70,9 +70,12 @@ export default function TaskManager() {
   const getFilteredTasks = () => {
     let filtered = tasks;
 
-    if (filter === "completed") filtered = filtered.filter((t) => t.completed);
-    if (filter === "incomplete")
-      filtered = filtered.filter((t) => !t.completed);
+    if (filter === "completed")
+      filtered = filtered.filter((t) => t.status === "completed");
+    if (filter === "pending")
+      filtered = filtered.filter((t) => t.status === "pending");
+    if (filter === "in-progress")
+      filtered = filtered.filter((t) => t.status === "in-progress");
 
     if (debouncedSearchQuery.trim()) {
       filtered = filtered.filter((t) =>
@@ -112,8 +115,11 @@ export default function TaskManager() {
     setCurrentPage(1);
   }, [filter, debouncedSearchQuery, sortBy]);
 
-  const completedCount = tasks.filter((t) => t.completed).length;
-  const incompleteCount = tasks.filter((t) => !t.completed).length;
+  const completedCount = tasks.filter((t) => t.status === "completed").length;
+  const inProgressCount = tasks.filter(
+    (t) => t.status === "in-progress"
+  ).length;
+  const pendingCount = tasks.filter((t) => t.status === "pending").length;
 
   return (
     <div
@@ -146,14 +152,16 @@ export default function TaskManager() {
             </div>
           </div>
           <div className="bg-card rounded-lg p-4 border border-border">
-            <div className="text-sm text-muted-foreground mb-1">Remaining</div>
+            <div className="text-sm text-muted-foreground mb-1">
+              In Progress
+            </div>
             <div className="flex items-center gap-2">
-              <Circle className="w-5 h-5 text-orange-500" />
+              <Circle className="w-5 h-5 text-blue-500" />
               <span
-                className="text-2xl font-bold text-orange-500"
-                data-testid="remaining-count"
+                className="text-2xl font-bold text-blue-500"
+                data-testid="in-progress-count"
               >
-                {incompleteCount}
+                {inProgressCount}
               </span>
             </div>
           </div>
@@ -214,9 +222,9 @@ export default function TaskManager() {
                   ? "No tasks yet. Add one to get started!"
                   : debouncedSearchQuery
                   ? `No tasks match "${debouncedSearchQuery}"`
-                  : filter === "completed"
-                  ? "No completed tasks yet."
-                  : "No incomplete tasks. Great job!"}
+                  : filter === "in-progress"
+                  ? "No in-progress tasks."
+                  : "No pending tasks. Great job!"}
               </p>
             </div>
           ) : (

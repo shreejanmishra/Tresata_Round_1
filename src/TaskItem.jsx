@@ -48,29 +48,45 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
     });
   };
 
+  const getStatusColor = () => {
+    switch (task.status) {
+      case "pending":
+        return "bg-yellow-50 border-yellow-200";
+      case "in-progress":
+        return "bg-blue-50 border-blue-200";
+      case "completed":
+        return "bg-green-50 border-green-200 opacity-75";
+      default:
+        return "bg-card border-border";
+    }
+  };
+
   return (
     <div
-      className={`group flex flex-col gap-2 p-4 rounded-lg border transition-all ${
-        task.completed
-          ? "bg-secondary border-border opacity-75"
-          : "bg-card border-border hover:border-primary"
-      }`}
+      className={`group flex flex-col gap-2 p-4 rounded-lg border transition-all ${getStatusColor()}`}
     >
       <div className="flex items-center gap-3">
         <button
-          onClick={() => onToggle(task.id)}
-          aria-label={
-            task.completed
-              ? `Mark "${task.title}" as incomplete`
-              : `Mark "${task.title}" as complete`
-          }
+          onClick={() => {
+            const statuses = ["pending", "in-progress", "completed"];
+            const currentIndex = statuses.indexOf(task.status || "pending");
+            const nextStatus = statuses[(currentIndex + 1) % statuses.length];
+            onToggle(task.id, nextStatus);
+          }}
+          aria-label={`Change task status from "${
+            task.status || "pending"
+          }" - cycle through Pending, In Progress, Completed`}
           className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-            task.completed
+            task.status === "completed"
               ? "bg-green-500 border-green-500"
-              : "border-primary hover:bg-primary hover:border-primary"
+              : task.status === "in-progress"
+              ? "bg-blue-500 border-blue-500"
+              : "border-yellow-500 hover:bg-yellow-500 hover:border-yellow-500"
           }`}
         >
-          {task.completed && <Check className="w-4 h-4 text-white" />}
+          {task.status === "completed" && (
+            <Check className="w-4 h-4 text-white" />
+          )}
         </button>
 
         {isEditing ? (
@@ -106,7 +122,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
           <>
             <span
               className={`flex-1 text-lg ${
-                task.completed
+                task.status === "completed"
                   ? "line-through text-muted-foreground"
                   : "text-foreground"
               }`}
