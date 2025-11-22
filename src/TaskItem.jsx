@@ -59,13 +59,13 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
   const getStatusColor = () => {
     switch (task.status) {
       case "pending":
-        return "bg-yellow-50 border-yellow-200";
+        return "bg-[#D0D0D0]/20 border-[#D0D0D0]";
       case "in-progress":
-        return "bg-blue-50 border-blue-200";
+        return "bg-[#FFB03C]/20 border-[#FFB03C]";
       case "completed":
-        return "bg-green-50 border-green-200 opacity-75";
+        return "bg-[#368A04]/20 border-[#368A04] opacity-75";
       default:
-        return "bg-card border-border";
+        return "bg-card border-[#D0D0D0]";
     }
   };
 
@@ -86,10 +86,10 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
           }" - cycle through Pending, In Progress, Completed`}
           className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
             task.status === "completed"
-              ? "bg-green-500 border-green-500"
+              ? "bg-[#368A04] border-[#368A04]"
               : task.status === "in-progress"
-              ? "bg-blue-500 border-blue-500"
-              : "border-yellow-500 hover:bg-yellow-500 hover:border-yellow-500"
+              ? "bg-[#FFB03C] border-[#FFB03C]"
+              : "border-[#D0D0D0] hover:bg-[#D0D0D0] hover:border-[#D0D0D0]"
           }`}
         >
           {task.status === "completed" && (
@@ -109,7 +109,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
                   if (e.key === "Escape") handleCancel();
                 }}
                 aria-label="Edit task title"
-                className="flex-1 px-3 py-1 rounded border border-primary bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="flex-1 px-3 py-1 rounded border-2 border-[#D0D0D0] bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[#D0D0D0]"
                 autoFocus
               />
               <button
@@ -132,7 +132,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
               onChange={(e) => setEditDescription(e.target.value)}
               placeholder="Task description (optional)..."
               aria-label="Edit task description"
-              className="flex-1 px-3 py-2 rounded border border-primary bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none h-20 text-sm"
+              className="flex-1 px-3 py-2 rounded border-2 border-[#D0D0D0] bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-[#D0D0D0] resize-none h-20 text-sm"
             />
           </div>
         ) : (
@@ -155,7 +155,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
                   setIsEditing(true);
                 }}
                 aria-label={`Edit "${task.title}"`}
-                className="p-1 text-muted-foreground hover:text-primary transition-colors"
+                className="p-1 text-muted-foreground hover:text-[#D0D0D0] transition-colors"
               >
                 <Edit2 className="w-5 h-5" />
               </button>
@@ -173,13 +173,13 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
       {task.description && !isEditing && (
         <button
           onClick={() => setShowDescription(!showDescription)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors ml-9 py-1"
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-[#D0D0D0] transition-colors ml-9 py-1"
           aria-label={showDescription ? "Hide description" : "Show description"}
         >
           {showDescription ? (
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className="w-4 h-4 text-[#034EA2]" />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className="w-4 h-4 text-[#034EA2]" />
           )}
           Description
         </button>
