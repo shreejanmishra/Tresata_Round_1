@@ -134,49 +134,9 @@ export default function TaskManager() {
       className="min-h-screen bg-gradient-to-br from-background to-secondary"
     >
       <div className="container max-w-2xl mx-auto px-4 py-8 border border-border rounded-lg bg-background shadow-lg">
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="bg-card rounded-lg p-3 border border-border">
-            <div className="text-xs text-muted-foreground mb-1">
-              Total Tasks
-            </div>
-            <div
-              className="text-xl font-bold text-primary"
-              data-testid="total-count"
-            >
-              {tasks.length}
-            </div>
-          </div>
-          <div className="bg-card rounded-lg p-3 border border-border">
-            <div className="text-xs text-muted-foreground mb-1">Completed</div>
-            <div className="flex items-center gap-1">
-              <CheckCircle2 className="w-4 h-4 text-green-500" />
-              <span
-                className="text-xl font-bold text-green-500"
-                data-testid="completed-count"
-              >
-                {completedCount}
-              </span>
-            </div>
-          </div>
-          <div className="bg-card rounded-lg p-3 border border-border">
-            <div className="text-xs text-muted-foreground mb-1">
-              In Progress
-            </div>
-            <div className="flex items-center gap-1">
-              <Circle className="w-4 h-4 text-blue-500" />
-              <span
-                className="text-xl font-bold text-blue-500"
-                data-testid="in-progress-count"
-              >
-                {inProgressCount}
-              </span>
-            </div>
-          </div>
-        </div>
-
         <div className="mb-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[oklch(0.4365_0.1509_256.72)]" />
             <input
               type="text"
               placeholder="Search tasks..."
@@ -199,7 +159,14 @@ export default function TaskManager() {
 
         <div className="flex flex-col gap-2 mb-4 md:flex-row md:items-center md:justify-between">
           <div className="flex-1">
-            <TaskFilters currentFilter={filter} onFilterChange={setFilter} />
+            <TaskFilters
+              currentFilter={filter}
+              onFilterChange={setFilter}
+              allCount={tasks.length}
+              pendingCount={pendingCount}
+              inProgressCount={inProgressCount}
+              completedCount={completedCount}
+            />
           </div>
           <div className="flex items-center gap-2">
             <label htmlFor="sort-by" className="text-xs text-muted-foreground">

@@ -1,9 +1,28 @@
-export default function TaskFilters({ currentFilter, onFilterChange }) {
+export default function TaskFilters({
+  currentFilter,
+  onFilterChange,
+  allCount = 0,
+  pendingCount = 0,
+  inProgressCount = 0,
+  completedCount = 0,
+}) {
   const filters = [
-    { value: "all", label: "All" },
-    { value: "pending", label: "Pending" },
-    { value: "in-progress", label: "In Progress" },
-    { value: "completed", label: "Completed" },
+    { value: "all", label: "All", count: allCount },
+    {
+      value: "pending",
+      label: "Pending",
+      count: pendingCount,
+    },
+    {
+      value: "in-progress",
+      label: "In Progress",
+      count: inProgressCount,
+    },
+    {
+      value: "completed",
+      label: "Completed",
+      count: completedCount,
+    },
   ];
 
   return (
@@ -23,7 +42,8 @@ export default function TaskFilters({ currentFilter, onFilterChange }) {
               : "bg-card border border-border text-foreground hover:border-primary"
           }`}
         >
-          {f.label}
+          {f.label}{" "}
+          <span className="text-xs opacity-75 font-bold ">({f.count})</span>
         </button>
       ))}
     </div>

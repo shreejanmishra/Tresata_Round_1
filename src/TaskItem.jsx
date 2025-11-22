@@ -141,7 +141,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
               className={`flex-1 text-lg ${
                 task.status === "completed"
                   ? "line-through text-muted-foreground"
-                  : "text-foreground"
+                  : "text-[oklch(0.4365_0.1509_256.72)]"
               }`}
               data-testid="task-title"
             >
@@ -155,7 +155,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
                   setIsEditing(true);
                 }}
                 aria-label={`Edit "${task.title}"`}
-                className="p-1 text-muted-foreground hover:text-[#D0D0D0] transition-colors"
+                className="p-1 text-muted-foreground hover:text-[oklch(0.4365_0.1509_256.72)] transition-colors"
               >
                 <Edit2 className="w-5 h-5" />
               </button>
@@ -173,7 +173,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
       {task.description && !isEditing && (
         <button
           onClick={() => setShowDescription(!showDescription)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-[#D0D0D0] transition-colors ml-9 py-1"
+          className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-[oklch(0.4365_0.1509_256.72)] hover:bg-[oklch(0.4365_0.1509_256.72)]/10 transition-all ml-9 py-1 px-2 rounded cursor-pointer"
           aria-label={showDescription ? "Hide description" : "Show description"}
         >
           {showDescription ? (
@@ -181,7 +181,7 @@ export default function TaskItem({ task, onToggle, onUpdate, onDelete }) {
           ) : (
             <ChevronDown className="w-4 h-4 text-[#034EA2]" />
           )}
-          Description
+          Details
         </button>
       )}
 
