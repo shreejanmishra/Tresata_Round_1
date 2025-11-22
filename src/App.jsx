@@ -1,10 +1,9 @@
-import "./App.css";
+import "./globals.css";
 import TaskManager from "./TaskManager";
 
 function App() {
   return (
     <>
-      {/* <TaskTable></TaskTable> */}
       <TaskManager></TaskManager>
     </>
   );

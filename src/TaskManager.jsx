@@ -1,16 +1,27 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import TaskAdder from "./TaskAdder";
+import TaskForm from "./TaskAdder";
 import TaskList from "./TaskList";
 import TaskFilters from "./TaskFilters";
-import { CheckCircle2, Circle } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  X,
+} from "lucide-react";
 
 export default function TaskManager() {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [sortBy, setSortBy] = useState("newest");
 
-  // Load tasks from localStorage on mount
   useEffect(() => {
     const savedTasks = localStorage.getItem("tasks");
     if (savedTasks) {
@@ -18,10 +29,17 @@ export default function TaskManager() {
     }
   }, []);
 
-  // Save tasks to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
 
   const addTask = (taskTitle) => {
     const newTask = {
@@ -50,34 +68,68 @@ export default function TaskManager() {
   };
 
   const getFilteredTasks = () => {
-    if (filter === "completed") return tasks.filter((t) => t.completed);
-    if (filter === "incomplete") return tasks.filter((t) => !t.completed);
-    return tasks;
+    let filtered = tasks;
+
+    if (filter === "completed") filtered = filtered.filter((t) => t.completed);
+    if (filter === "incomplete")
+      filtered = filtered.filter((t) => !t.completed);
+
+    if (debouncedSearchQuery.trim()) {
+      filtered = filtered.filter((t) =>
+        t.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+      );
+    }
+
+    if (sortBy === "name-asc") {
+      filtered = [...filtered].sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === "name-desc") {
+      filtered = [...filtered].sort((a, b) => b.title.localeCompare(a.title));
+    } else if (sortBy === "newest") {
+      filtered = [...filtered].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+    } else if (sortBy === "oldest") {
+      filtered = [...filtered].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
+    }
+
+    return filtered;
   };
+
+  const filteredTasks = getFilteredTasks();
+  const totalPages =
+    itemsPerPage === "all" ? 1 : Math.ceil(filteredTasks.length / itemsPerPage);
+  const startIndex =
+    (currentPage - 1) *
+    (itemsPerPage === "all" ? filteredTasks.length : itemsPerPage);
+  const paginatedTasks =
+    itemsPerPage === "all"
+      ? filteredTasks
+      : filteredTasks.slice(startIndex, startIndex + itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter, debouncedSearchQuery, sortBy]);
 
   const completedCount = tasks.filter((t) => t.completed).length;
   const incompleteCount = tasks.filter((t) => !t.completed).length;
 
-  const filteredTasks = getFilteredTasks();
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary">
-      <div className="container max-w-2xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">
-            Task Manager
-          </h1>
-          <p className="text-muted-foreground">Stay organized and productive</p>
-        </div>
-
-        {/* Stats */}
+    <div
+      data-testid="task-manager"
+      className="min-h-screen bg-gradient-to-br from-background to-secondary"
+    >
+      <div className="container max-w-2xl mx-auto px-4 py-8 border border-border rounded-lg bg-background shadow-lg">
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-card rounded-lg p-4 border border-border">
             <div className="text-sm text-muted-foreground mb-1">
               Total Tasks
             </div>
-            <div className="text-2xl font-bold text-primary">
+            <div
+              className="text-2xl font-bold text-primary"
+              data-testid="total-count"
+            >
               {tasks.length}
             </div>
           </div>
@@ -85,7 +137,10 @@ export default function TaskManager() {
             <div className="text-sm text-muted-foreground mb-1">Completed</div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <span className="text-2xl font-bold text-green-500">
+              <span
+                className="text-2xl font-bold text-green-500"
+                data-testid="completed-count"
+              >
                 {completedCount}
               </span>
             </div>
@@ -94,24 +149,62 @@ export default function TaskManager() {
             <div className="text-sm text-muted-foreground mb-1">Remaining</div>
             <div className="flex items-center gap-2">
               <Circle className="w-5 h-5 text-orange-500" />
-              <span className="text-2xl font-bold text-orange-500">
+              <span
+                className="text-2xl font-bold text-orange-500"
+                data-testid="remaining-count"
+              >
                 {incompleteCount}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Add Task Form */}
         <div className="mb-6">
-          <TaskAdder onAddTask={addTask} />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search tasks by title"
+              className="w-full pl-10 pr-10 py-2 rounded-lg bg-card border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search query"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Filters */}
-        <div className="mb-6">
-          <TaskFilters currentFilter={filter} onFilterChange={setFilter} />
+        <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex-1">
+            <TaskFilters currentFilter={filter} onFilterChange={setFilter} />
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="sort-by" className="text-sm text-muted-foreground">
+              Sort by:
+            </label>
+            <select
+              id="sort-by"
+              aria-label="Sort tasks by name or creation time"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-1 rounded-lg bg-card border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name-asc">Name (A-Z)</option>
+              <option value="name-desc">Name (Z-A)</option>
+            </select>
+          </div>
         </div>
 
-        {/* Task List */}
         <div>
           {filteredTasks.length === 0 ? (
             <div className="text-center py-12 bg-card rounded-lg border border-border">
@@ -119,19 +212,86 @@ export default function TaskManager() {
               <p className="text-muted-foreground text-lg">
                 {tasks.length === 0
                   ? "No tasks yet. Add one to get started!"
+                  : debouncedSearchQuery
+                  ? `No tasks match "${debouncedSearchQuery}"`
                   : filter === "completed"
                   ? "No completed tasks yet."
                   : "No incomplete tasks. Great job!"}
               </p>
             </div>
           ) : (
-            <TaskList
-              tasks={filteredTasks}
-              onToggleTask={toggleTask}
-              onUpdateTask={updateTask}
-              onDeleteTask={deleteTask}
-            />
+            <>
+              <TaskList
+                tasks={paginatedTasks}
+                onToggleTask={toggleTask}
+                onUpdateTask={updateTask}
+                onDeleteTask={deleteTask}
+              />
+              <div className="flex flex-col gap-4 mt-6">
+                <div className="flex items-center justify-center gap-3">
+                  <label
+                    htmlFor="items-per-page"
+                    className="text-sm text-muted-foreground"
+                  >
+                    Items per page:
+                  </label>
+                  <select
+                    id="items-per-page"
+                    aria-label="Select number of items to display per page"
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(
+                        e.target.value === "all"
+                          ? "all"
+                          : Number.parseInt(e.target.value)
+                      );
+                      setCurrentPage(1);
+                    }}
+                    className="px-3 py-1 rounded-lg bg-card border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                  >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={25}>25</option>
+                    <option value="all">All</option>
+                  </select>
+                </div>
+                <div className="flex items-center justify-between px-2">
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
+                    }
+                    disabled={currentPage === 1 || itemsPerPage === "all"}
+                    aria-label="Go to previous page"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border text-foreground hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Previous
+                  </button>
+                  <span className="text-sm text-muted-foreground">
+                    {itemsPerPage === "all"
+                      ? `All ${filteredTasks.length} tasks`
+                      : `Page ${currentPage} of ${totalPages}`}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                    disabled={
+                      currentPage === totalPages || itemsPerPage === "all"
+                    }
+                    aria-label="Go to next page"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border text-foreground hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </>
           )}
+        </div>
+        <div className="mt-6">
+          <TaskForm onAddTask={addTask} />
         </div>
       </div>
     </div>
