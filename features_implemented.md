@@ -26,7 +26,7 @@ Features implemented:
 
 9. Persisting Tasks: Implement a way to persist tasks between page reloads using local storage.
 
-10. Task Filters: Add functionality to filter tasks by their status made different tabs (all, completed, incomplete)
+10. Task Filters: Add functionality to filter tasks by their status made different tabs (all, completed, incomplete). Click the circle icon before the task to change the status of the task.
 
 11. Search Functionality: Implemented task search with debounced query (300ms) allowing users to filter tasks in real-time by title.
 
@@ -49,14 +49,32 @@ Features implemented:
 
 20. Component Composition: Modular architecture with TaskManager (main container), TaskList, TaskItem, TaskAdder, and TaskFilters as reusable components.
 
-21. Comprehensive Test Suite: Jest and React Testing Library with 24+ passing tests covering all components (App, TaskAdder, TaskFilters, TaskItem, TaskList, TaskManager).
+21. Comprehensive Test Suite: Jest and React Testing Library with 67 passing tests covering all components (App, TaskAdder, TaskFilters, TaskItem, TaskList, TaskManager).
 
-22. Unit Tests: Individual component tests verifying correct rendering, prop handling, and event callbacks.
+22. Unit Tests: Individual component tests verifying correct rendering, prop handling, and event callbacks across TaskAdder, TaskItem, TaskFilters, and TaskList components.
 
-23. Integration Tests: TaskManager tests covering feature interactions like adding tasks, filtering, searching, and localStorage persistence.
+23. Integration Tests: TaskManager tests covering feature interactions like adding tasks, filtering by status, searching, sorting, pagination, and localStorage persistence.
 
-24. Mock Setup: Mocked Lucide React icons and localStorage for reliable testing across environments.
+24. Test Coverage for New Features:
 
-25. Test Configuration: Jest configuration with JSDOM environment, module name mapping for CSS, and proper setupTests.js for test utilities.
+    - Description field auto-show when user enters task title
+    - Task selection with checkbox and multi-select functionality
+    - Description visibility toggle with ChevronUp/ChevronDown icons
+    - Status cycling through pending → in-progress → completed
+    - Strikethrough styling for completed tasks
+    - Edit workflow with save/cancel via button or Escape key
+    - Task creation date formatting and display
 
-26. Keyboard Support: Keyboard shortcuts including Enter to submit tasks and Escape to cancel edits.
+25. Mock Setup: Mocked Lucide React icons and localStorage for reliable testing across environments.
+
+26. Test Configuration: Jest configuration with JSDOM environment, module name mapping for CSS, and proper setupTests.js for test utilities.
+
+27. DOM Selector Best Practices: Tests use proper aria-label queries for semantic identification, className inspection for Tailwind arbitrary values, and role-based queries for accessibility compliance.
+
+28. Keyboard Support: Keyboard shortcuts including Enter to submit tasks and Escape to cancel edits.
+
+29. Task Description: Optional task descriptions with auto-reveal UI when user starts typing the title. Full CRUD operations on descriptions with validation.
+
+30. Task Selection: Checkbox-based task selection system with individual task and "select all visible tasks" functionality for bulk operations.
+
+31. Status Indicators: Visual status representation using CSS-based colored circles (pending: gray, in-progress: orange, completed: green) with appropriate styling and icons.
