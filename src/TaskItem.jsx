@@ -166,7 +166,7 @@ export default function TaskItem({
               )}
 
               {showDescription && task.description && (
-                <pre className="p-2 sm:p-3 bg-background rounded text-xs sm:text-sm text-foreground border border-border/50 max-h-48 overflow-y-auto">
+                <pre className="p-2 sm:p-3 bg-background rounded text-xs sm:text-sm text-foreground border border-border/50 max-h-48 overflow-y-auto text-wrap">
                   {task.description}
                 </pre>
               )}
