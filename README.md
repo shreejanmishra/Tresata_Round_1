@@ -21,9 +21,9 @@ My main aim was to keep the UI simple, highly accessible and very convinient to 
 #Local setup instruction:<br/>
 (in the base folder run the commands mentioned below)
 
-**npm i**- install all the dependencies mentioned in package.json
-**npm run dev** - start dev server
-**npm run build** - build production ready dist folder (used in VM deployment)
-**npm run test** - run Jest test suite
+**npm i**- install all the dependencies mentioned in package.json <br/>
+**npm run dev** - start dev server<br/>
+**npm run build** - build production ready dist folder (used in VM deployment)<br/>
+**npm run test** - run Jest test suite<br/>
 
 ##The project has been hosted of this link: [Netlify](https://soft-gumdrop-787e95.netlify.app/)
