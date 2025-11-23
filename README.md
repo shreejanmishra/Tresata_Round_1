@@ -2,7 +2,7 @@ Making this repo for sharing convinience. I did not used the github at the time 
 Took creative liberty for certain designs and layout where I felt I can do better than the Figma design provided.
 My main aim was to keep the UI simple, highly accessible and very convinient to use.
 
-Refer the features_implemented.md file for:
+Refer the features_implemented.md file for: <br/>
   1.Instructions
   2.Features implemented
 
