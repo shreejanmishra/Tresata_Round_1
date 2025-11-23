@@ -26,4 +26,4 @@ My main aim was to keep the UI simple, highly accessible and very convinient to 
 **npm run build** - build production ready dist folder (used in VM deployment)<br/>
 **npm run test** - run Jest test suite<br/>
 
-##The project has been hosted of this link: [Netlify](https://soft-gumdrop-787e95.netlify.app/)
+##The project has been hosted on this link and each merge to main branch will trigger a redployment: [Netlify](https://soft-gumdrop-787e95.netlify.app/)
