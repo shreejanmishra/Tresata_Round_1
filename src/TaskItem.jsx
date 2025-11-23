@@ -92,7 +92,7 @@ export default function TaskItem({
             aria-label={`Change task status from "${
               task.status || "pending"
             }" - cycle through Pending, In Progress, Completed`}
-            className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+            className={`flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all text-sm cursor-pointer ${
               task.status === "completed"
                 ? "bg-[#368A04] border-[#368A04]"
                 : task.status === "in-progress"
@@ -205,7 +205,7 @@ export default function TaskItem({
                 setIsEditing(true);
               }}
               aria-label={`Edit "${task.title}"`}
-              className="p-1 sm:p-1.5 text-muted-foreground hover:text-[oklch(0.4365_0.1509_256.72)] focus:text-[oklch(0.4365_0.1509_256.72)] transition-colors rounded hover:bg-background/50"
+              className="p-1 sm:p-1.5 text-muted-foreground hover:text-[oklch(0.4365_0.1509_256.72)] focus:text-[oklch(0.4365_0.1509_256.72)] transition-colors rounded hover:bg-background/50 cursor-pointer"
             >
               <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
@@ -214,7 +214,7 @@ export default function TaskItem({
           <button
             onClick={() => onDelete(task.id)}
             aria-label={`Delete "${task.title}"`}
-            className="p-1 sm:p-1.5 text-muted-foreground hover:text-destructive focus:text-destructive transition-colors rounded hover:bg-background/50"
+            className="p-1 sm:p-1.5 text-muted-foreground hover:text-destructive focus:text-destructive transition-colors rounded hover:bg-background/50 cursor-pointer"
           >
             <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
