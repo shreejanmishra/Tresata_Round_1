@@ -36,31 +36,21 @@ export default function TaskItem({
 
   const formatTaskDate = (dateString) => {
     const date = new Date(dateString);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
 
-    const taskDate = new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate()
-    );
-
-    if (taskDate.getTime() === today.getTime()) {
-      return date.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-      });
-    }
-    if (taskDate.getTime() === yesterday.getTime()) {
-      return "Yesterday";
-    }
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+    const timeString = date.toLocaleTimeString("en-US", {
+      weekday: "short",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
+
+    const dateFormatString = date.toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+
+    return { timeString, dateFormatString };
   };
 
   const getStatusColor = () => {
@@ -182,7 +172,9 @@ export default function TaskItem({
               )}
 
               <div className="text-xs text-muted-foreground">
-                Created: {formatTaskDate(task.createdAt)}
+                Created: {formatTaskDate(task.createdAt).timeString}
+                <br />
+                {formatTaskDate(task.createdAt).dateFormatString}
               </div>
             </>
           )}
