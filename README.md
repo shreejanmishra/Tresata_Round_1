@@ -1,3 +1,5 @@
+##The project has been hosted on this link and each merge to main branch will trigger a redployment: [Netlify](https://soft-gumdrop-787e95.netlify.app/)
+
 Making this repo for sharing convinience. I did not use the github at the time of creating, so can't track all the commits made during the initial stage while implementing the features 😞. <br/>
 
 Took creative liberty for certain designs and layout where I felt I can do better than the Figma design provided.<br/>
@@ -25,5 +27,3 @@ My main aim was to keep the UI simple, highly accessible and very convinient to 
 **npm run dev** - start dev server<br/>
 **npm run build** - build production ready dist folder (used in VM deployment)<br/>
 **npm run test** - run Jest test suite<br/>
-
-##The project has been hosted on this link and each merge to main branch will trigger a redployment: [Netlify](https://soft-gumdrop-787e95.netlify.app/)
